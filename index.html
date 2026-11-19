@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Monkey Trader: Read the flow. Coming soon.</title>
+<meta name="description" content="Monkey Trader is a chart app for traders who read order flow: liquidation heatmaps, funding, open interest, CVD, SK sequences and an AI agent that reads your chart. Coming soon.">
+<meta property="og:title" content="Monkey Trader: Read the flow. Coming soon.">
+<meta property="og:description" content="A chart app for traders who read order flow. Coming soon.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://monkey-trader.c3smonkey.com/">
+<meta property="og:image" content="https://monkey-trader.c3smonkey.com/img/og.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="img/logo.jpg">
+<style>
+:root{--bg:#07070c;--text:#f4f4fa;--muted:#9aa0b8;--violet:#b44fd6;--cyan:#7fd8e8;--gold:#ffc933}
+@media (prefers-color-scheme: light){:root{--bg:#07070c;--text:#f4f4fa}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:"Helvetica Neue",Arial,system-ui,sans-serif}
+.hero{position:relative;min-height:100svh;display:flex;align-items:center;justify-content:center;text-align:center;padding:48px 20px;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:url(img/banner.jpg) 28% 50%/cover;filter:brightness(.45) saturate(1.15)}
+.hero::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,rgba(7,7,12,.25),rgba(7,7,12,.92) 75%)}
+.in{position:relative;z-index:1;max-width:760px}
+.logo{width:min(240px,52vw);aspect-ratio:1;border-radius:50%;object-fit:cover;box-shadow:0 0 60px rgba(180,79,214,.55);margin:0 auto 28px;display:block}
+h1{margin:0;font-weight:900;font-size:clamp(44px,9vw,96px);line-height:1;letter-spacing:-1px;text-shadow:0 0 40px rgba(180,79,214,.6)}
+h1 span{color:var(--violet)}
+.tag{margin:18px 0 8px;font-weight:800;letter-spacing:6px;color:var(--cyan);font-size:clamp(14px,2.6vw,20px)}
+.soon{display:inline-block;margin:22px 0 10px;padding:12px 28px;border:2px solid var(--gold);border-radius:999px;color:var(--gold);font-weight:900;font-size:clamp(18px,3.4vw,26px);letter-spacing:3px;box-shadow:0 0 28px rgba(255,201,51,.35)}
+.lead{color:var(--muted);font-size:clamp(16px,2.4vw,20px);line-height:1.5;margin:18px auto 0;max-width:620px}
+.btn{display:inline-block;margin-top:30px;padding:14px 28px;border-radius:12px;background:var(--violet);color:#fff;text-decoration:none;font-weight:800;font-size:18px}
+.btn:hover{filter:brightness(1.12)}
+.feat{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;max-width:980px;margin:0 auto;padding:56px 20px}
+.card{border:1px solid rgba(180,79,214,.35);border-radius:16px;padding:22px;background:rgba(20,16,30,.7)}
+.card b{display:block;color:var(--cyan);font-size:18px;margin-bottom:8px}
+.card p{margin:0;color:var(--muted);line-height:1.5;font-size:15px}
+footer{text-align:center;color:var(--muted);font-size:13px;padding:0 20px 48px;line-height:1.6}
+footer a{color:var(--cyan)}
+</style>
+</head>
+<body>
+<header class="hero"><div class="in">
+  <img class="logo" src="img/logo.jpg" alt="Monkey Trader">
+  <h1>MONKEY <span>TRADER</span></h1>
+  <div class="tag">READ THE FLOW.</div>
+  <div class="soon">COMING SOON</div>
+  <p class="lead">A chart app for traders who read order flow: liquidation heatmaps, funding, open interest, CVD and an AI agent that reads your chart.</p>
+  <a class="btn" href="https://www.youtube.com/@monkeytraderapp">Follow the launch on YouTube</a>
+</div></header>
+<section class="feat">
+  <div class="card"><b>Banana Radar</b><p>Liquidation heatmap and levels, estimated from open interest.</p></div>
+  <div class="card"><b>Jungle Flow</b><p>Funding, open interest, CVD and liquidations on one time axis.</p></div>
+  <div class="card"><b>AI agent</b><p>Asks your chart questions and draws SK sequences. Your own login.</p></div>
+  <div class="card"><b>Keys first</b><p>Vim keys, a leader menu and tmux-style panes.</p></div>
+</section>
+<footer>
+  <div>Not financial advice. Trading carries risk. Heatmaps are estimates.</div>
+  <div>&copy; c3smonkey &middot; <a href="https://www.youtube.com/@monkeytraderapp">@monkeytraderapp</a></div>
+</footer>
+</body>
+</html>
