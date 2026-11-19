@@ -18,7 +18,7 @@
 *{box-sizing:border-box}
 html,body{margin:0;background:var(--bg);color:var(--text);font-family:"Helvetica Neue",Arial,system-ui,sans-serif}
 .hero{position:relative;min-height:100svh;display:flex;align-items:center;justify-content:center;text-align:center;padding:48px 20px;overflow:hidden}
-.hero::before{content:"";position:absolute;inset:0;background:url(img/banner.jpg) 28% 50%/cover;filter:brightness(.45) saturate(1.15)}
+.hero::before{content:"";position:absolute;inset:0;background:url(img/banner.jpg) 28% calc(50% + var(--py,0px))/cover;filter:brightness(.45) saturate(1.15)}
 .hero::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%,rgba(7,7,12,.25),rgba(7,7,12,.92) 75%)}
 .in{position:relative;z-index:1;max-width:760px}
 .logo{width:min(240px,52vw);aspect-ratio:1;border-radius:50%;object-fit:cover;box-shadow:0 0 60px rgba(180,79,214,.55);margin:0 auto 28px;display:block}
@@ -35,6 +35,31 @@ h1 span{color:var(--violet)}
 .card p{margin:0;color:var(--muted);line-height:1.5;font-size:15px}
 footer{text-align:center;color:var(--muted);font-size:13px;padding:0 20px 48px;line-height:1.6}
 footer a{color:var(--cyan)}
+
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+.reveal.on{opacity:1;transform:none}
+.sec{max-width:980px;margin:0 auto;padding:0 20px 56px}
+.sec h2{font-size:clamp(26px,4.5vw,38px);margin:0 0 6px;font-weight:900}
+.sec h2 span{color:var(--violet)}
+.sec .sub{color:var(--muted);margin:0 0 18px;line-height:1.5}
+.radar{position:relative;border:1px solid rgba(180,79,214,.35);border-radius:16px;overflow:hidden;background:#0a0a14}
+.radar canvas{display:block;width:100%;height:clamp(240px,46vw,420px);cursor:crosshair}
+.radar .hint{position:absolute;left:14px;bottom:10px;font-size:12px;color:var(--muted);pointer-events:none}
+.radar .read{position:absolute;right:14px;top:10px;font-size:13px;color:var(--cyan);font-variant-numeric:tabular-nums;pointer-events:none}
+.player{display:flex;align-items:center;gap:16px;border:1px solid rgba(127,216,232,.3);border-radius:16px;padding:16px;background:rgba(20,16,30,.7);flex-wrap:wrap}
+.play{width:56px;height:56px;border-radius:50%;border:0;background:var(--violet);color:#fff;font-size:22px;cursor:pointer;box-shadow:0 0 24px rgba(180,79,214,.5)}
+.play:focus-visible,.btn:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+.player canvas{flex:1;min-width:160px;height:56px}
+.player label{color:var(--muted);font-size:13px;display:flex;align-items:center;gap:8px}
+.player .t{color:var(--text);font-weight:800}
+.yt{position:relative;aspect-ratio:16/9;border-radius:16px;overflow:hidden;border:1px solid rgba(180,79,214,.35);background:#000}
+.yt img,.yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0;object-fit:cover}
+.yt button{position:absolute;inset:0;width:100%;border:0;background:rgba(7,7,12,.35);cursor:pointer;color:#fff;font-size:18px;font-weight:800}
+.yt button i{display:grid;place-items:center;width:76px;height:76px;margin:0 auto 10px;border-radius:50%;background:var(--violet);font-style:normal;font-size:30px;box-shadow:0 0 40px rgba(180,79,214,.6)}
+.keys{position:fixed;right:14px;bottom:14px;z-index:5;background:rgba(20,16,30,.92);border:1px solid rgba(127,216,232,.35);border-radius:10px;padding:8px 12px;font-size:12px;color:var(--muted);display:none}
+.keys.on{display:block}
+kbd{background:#1a1626;border:1px solid #3a3350;border-radius:4px;padding:1px 6px;color:var(--cyan);font-family:ui-monospace,Menlo,monospace}
+@media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
 </style>
 </head>
 <body>
@@ -52,9 +77,129 @@ footer a{color:var(--cyan)}
   <div class="card"><b>AI agent</b><p>Asks your chart questions and draws SK sequences. Your own login.</p></div>
   <div class="card"><b>Keys first</b><p>Vim keys, a leader menu and tmux-style panes.</p></div>
 </section>
+<section class="sec reveal">
+  <h2>Banana <span>Radar</span></h2>
+  <p class="sub">Move your mouse over the chart. Hot bands are estimated liquidation levels. Illustrative data, not a real market.</p>
+  <div class="radar"><canvas id="radar" aria-label="Interactive liquidation heatmap demo"></canvas><div class="read" id="read"></div><div class="hint">hover to scan &middot; the heat pulses with the music</div></div>
+</section>
+<section class="sec reveal">
+  <h2>Hear the <span>jungle</span></h2>
+  <p class="sub">The Monkey Trader theme. No autoplay, you decide.</p>
+  <div class="player">
+    <button class="play" id="play" aria-label="Play theme">&#9654;</button>
+    <canvas id="viz" aria-hidden="true"></canvas>
+    <label>Vol <input id="vol" type="range" min="0" max="1" step="0.01" value="0.7" aria-label="Volume"></label>
+  </div>
+  <audio id="aud" src="audio/zero-to-c.mp3" preload="none" loop></audio>
+</section>
+<section class="sec reveal">
+  <h2>The <span>trailer</span></h2>
+  <p class="sub">Two minutes of flow.</p>
+  <div class="yt" id="yt">
+    <img src="https://i.ytimg.com/vi/h1ILLfQ7GYk/hqdefault.jpg" alt="Monkey Trader trailer" loading="lazy">
+    <button id="ytbtn" aria-label="Play trailer"><i>&#9654;</i>Watch the trailer</button>
+  </div>
+</section>
+<div class="keys" id="keys"><kbd>j</kbd>/<kbd>k</kbd> scroll &middot; <kbd>space</kbd> music &middot; <kbd>g</kbd> top &middot; <kbd>?</kbd> help</div>
 <footer>
   <div>Not financial advice. Trading carries risk. Heatmaps are estimates.</div>
   <div>&copy; c3smonkey &middot; <a href="https://www.youtube.com/@monkeytraderapp">@monkeytraderapp</a></div>
 </footer>
+<script>
+(function(){
+var reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+// scroll reveal
+var io=new IntersectionObserver(function(e){e.forEach(function(x){if(x.isIntersecting){x.target.classList.add('on');io.unobserve(x.target)}})},{threshold:.12});
+document.querySelectorAll('.feat .card,.reveal').forEach(function(el){el.classList.add('reveal');io.observe(el)});
+// hero parallax
+var hero=document.querySelector('.hero');
+if(!reduce)addEventListener('scroll',function(){hero.style.setProperty('--py',Math.min(scrollY,600)*.15+'px')},{passive:true});
+// audio
+var aud=document.getElementById('aud'),playBtn=document.getElementById('play'),vol=document.getElementById('vol');
+var ctx,an,data,bass=0;
+function setup(){
+  if(ctx)return;
+  try{
+    ctx=new (window.AudioContext||window.webkitAudioContext)();
+    var src=ctx.createMediaElementSource(aud);an=ctx.createAnalyser();an.fftSize=256;
+    src.connect(an);an.connect(ctx.destination);data=new Uint8Array(an.frequencyBinCount);
+  }catch(e){ctx=null}
+}
+function toggle(){
+  if(aud.paused){setup();if(ctx&&ctx.state==='suspended')ctx.resume();aud.play().catch(function(){});}
+  else aud.pause();
+}
+playBtn.addEventListener('click',toggle);
+aud.addEventListener('play',function(){playBtn.innerHTML='&#10074;&#10074;'});
+aud.addEventListener('pause',function(){playBtn.innerHTML='&#9654;'});
+aud.volume=.7;vol.addEventListener('input',function(){aud.volume=+vol.value});
+// visualizer
+var viz=document.getElementById('viz'),vx=viz.getContext('2d');
+function fit(c){var r=c.getBoundingClientRect(),d=devicePixelRatio||1;c.width=r.width*d;c.height=r.height*d;return d}
+// radar
+var rc=document.getElementById('radar'),rx=rc.getContext('2d'),read=document.getElementById('read');
+var seed=7;function rnd(){seed=(seed*16807)%2147483647;return seed/2147483647}
+var N=70,candles=[],p=100;
+for(var i=0;i<N;i++){var o=p,c=o+(rnd()-.48)*3.2,h=Math.max(o,c)+rnd()*1.6,l=Math.min(o,c)-rnd()*1.6;candles.push([o,h,l,c]);p=c}
+var lo=Math.min.apply(null,candles.map(function(k){return k[2]}))-3,hi=Math.max.apply(null,candles.map(function(k){return k[1]}))+3;
+var bands=[];for(var b=0;b<9;b++)bands.push({y:lo+rnd()*(hi-lo),w:.8+rnd()*1.6,s:.35+rnd()*.65});
+var mouse={x:-1,y:-1},W=0,H=0,D=1;
+function resize(){D=fit(rc);W=rc.width;H=rc.height;fit(viz)}
+resize();addEventListener('resize',resize);
+rc.addEventListener('mousemove',function(e){var r=rc.getBoundingClientRect();mouse.x=(e.clientX-r.left)*D;mouse.y=(e.clientY-r.top)*D});
+rc.addEventListener('mouseleave',function(){mouse.x=mouse.y=-1;read.textContent=''});
+rc.addEventListener('touchmove',function(e){var t=e.touches[0],r=rc.getBoundingClientRect();mouse.x=(t.clientX-r.left)*D;mouse.y=(t.clientY-r.top)*D},{passive:true});
+function Y(v){return H-(v-lo)/(hi-lo)*H}
+function frame(t){
+  if(an&&!aud.paused){an.getByteFrequencyData(data);var s=0;for(var i=0;i<6;i++)s+=data[i];bass=bass*.8+(s/6/255)*.2}else bass*=.95;
+  rx.clearRect(0,0,W,H);
+  var near=null,nd=1e9;
+  bands.forEach(function(b){
+    var y=Y(b.y),h=b.w/(hi-lo)*H,d=mouse.y<0?1e9:Math.abs(mouse.y-y),glow=Math.max(0,1-d/(H*.18));
+    var a=.12+b.s*.25+glow*.5+bass*.5*b.s;
+    var g=rx.createLinearGradient(0,y-h,0,y+h);
+    g.addColorStop(0,'rgba(180,79,214,0)');g.addColorStop(.5,'rgba(255,201,51,'+Math.min(a,.9)+')');g.addColorStop(1,'rgba(180,79,214,0)');
+    rx.fillStyle=g;rx.fillRect(0,y-h,W,h*2);
+    if(d<nd){nd=d;near=b}
+  });
+  var cw=W/N;
+  candles.forEach(function(k,i){
+    var up=k[3]>=k[0],col=up?'#7fd8e8':'#b44fd6',x=i*cw+cw/2;
+    rx.strokeStyle=col;rx.fillStyle=col;rx.lineWidth=Math.max(1,D);
+    rx.beginPath();rx.moveTo(x,Y(k[1]));rx.lineTo(x,Y(k[2]));rx.stroke();
+    var top=Y(Math.max(k[0],k[3])),hh=Math.max(2,Math.abs(Y(k[0])-Y(k[3])));
+    rx.fillRect(x-cw*.32,top,cw*.64,hh);
+  });
+  if(mouse.x>=0){
+    rx.strokeStyle='rgba(244,244,250,.25)';rx.setLineDash([4*D,4*D]);rx.beginPath();rx.moveTo(mouse.x,0);rx.lineTo(mouse.x,H);rx.moveTo(0,mouse.y);rx.lineTo(W,mouse.y);rx.stroke();rx.setLineDash([]);
+    if(near&&nd<H*.18)read.textContent='liq. cluster ~ '+(Math.round(near.y*10)/10)+' \u00b7 strength '+Math.round(near.s*100)+'%';else read.textContent='';
+  }
+  // viz
+  var vw=viz.width,vh=viz.height;vx.clearRect(0,0,vw,vh);
+  var bars=48,bw=vw/bars;
+  for(var j=0;j<bars;j++){
+    var v=(an&&!aud.paused)?data[Math.floor(j*data.length/bars*.8)]/255:.06+.04*Math.sin(t/500+j/3);
+    var bh=Math.max(3,v*vh);vx.fillStyle=j%2?'#7fd8e8':'#b44fd6';vx.fillRect(j*bw+bw*.15,vh-bh,bw*.7,bh);
+  }
+  if(!reduce||!aud.paused)requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+// youtube click-to-load
+document.getElementById('ytbtn').addEventListener('click',function(){
+  var box=document.getElementById('yt');if(!aud.paused)aud.pause();
+  box.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/h1ILLfQ7GYk?autoplay=1&rel=0" title="Monkey Trader trailer" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
+});
+// vim keys
+var keys=document.getElementById('keys');
+addEventListener('keydown',function(e){
+  if(e.metaKey||e.ctrlKey||e.altKey||/INPUT|TEXTAREA/.test(e.target.tagName))return;
+  if(e.key==='j')scrollBy({top:200,behavior:'smooth'});
+  else if(e.key==='k')scrollBy({top:-200,behavior:'smooth'});
+  else if(e.key==='g')scrollTo({top:0,behavior:'smooth'});
+  else if(e.key===' '&&e.target===document.body){e.preventDefault();toggle()}
+  else if(e.key==='?')keys.classList.toggle('on');
+});
+})();
+</script>
 </body>
 </html>
